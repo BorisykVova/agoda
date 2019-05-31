@@ -89,7 +89,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.idea
+/.idea
 
 
 # Spyder project settings
@@ -107,5 +107,5 @@ venv.bak/
 
 #agota
 rooms
-logging/
-!logging.log
+logging/*
+!logging/logging.log
