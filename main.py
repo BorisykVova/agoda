@@ -21,7 +21,7 @@ ADULTS = args.adults
 
 room = get_rooms(CHECK_IN, LOS, HOTEL_ID, ADULTS)
 
-if len(room) > 0:
+if room:
     main_log.info('Room found')
 
     data = {
