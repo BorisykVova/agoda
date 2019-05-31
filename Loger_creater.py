@@ -2,7 +2,7 @@ import logging
 from logging import FileHandler, Logger
 from logging.handlers import TimedRotatingFileHandler
 FORMATTER = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s — %(message)s")
-LOG_FILE = 'logging.log'
+LOG_FILE = 'logging/logging.log'
 
 
 def get_file_handler() -> FileHandler:
