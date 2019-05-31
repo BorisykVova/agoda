@@ -31,6 +31,6 @@ if room:
         'cheapest_room': room,
     }
     with open('rooms', 'a') as file:
-        file.write(pformat(data))
+        file.write(pformat(data) + '\n')
 else:
     main_log.info('Room not found')
