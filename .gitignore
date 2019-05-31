@@ -108,7 +108,4 @@ venv.bak/
 .mypy_cache/
 
 .log
-.log.*
-log.*
 rooms
-*.mm.*
