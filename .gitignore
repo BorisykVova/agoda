@@ -111,3 +111,4 @@ logging/*
 !logging/.gitkeep
 results/*
 !results/.gitkeep
+logging/logging.log
