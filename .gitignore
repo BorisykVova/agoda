@@ -106,7 +106,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-#agota
-rooms
+# agota
 logging/*
-!logging/logging.log
+!logging/.gitkeep
+results/*
+!results/.gitkeep

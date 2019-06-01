@@ -1,6 +1,6 @@
 import requests
 import typing
-from Loger_creater import get_logger
+from logger_creater import get_logger
 
 
 main_log = get_logger('request')

@@ -1,7 +1,11 @@
 import argparse
-from pprint import pformat, pprint
+import json
+import os
 from parsing import get_rooms, main_log
 from datetime import datetime
+
+JSON_PATH = 'results/rooms.json'
+
 
 now = datetime.now()
 date_now = datetime.strftime(datetime.now(), "%Y-%m-%d")
@@ -30,7 +34,17 @@ if room:
         'los': LOS,
         'cheapest_room': room,
     }
-    with open('rooms', 'a') as file:
-        file.write(pformat(data) + '\n')
+
+    if not os.path.isfile(JSON_PATH):
+        with open(JSON_PATH, 'w') as json_file:
+            json.dump([data], json_file, indent=4)
+    else:
+        with open(JSON_PATH) as feeds_json:
+            feeds = json.load(feeds_json)
+            feeds.append(data)
+
+            with open(JSON_PATH, 'w') as json_file:
+                json.dump(feeds, json_file, indent=4)
+
 else:
-    main_log.info('Room not found')
+    main_log.info('Room not found', )
