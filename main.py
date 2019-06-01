@@ -28,20 +28,13 @@ room = get_rooms(CHECK_IN, LOS, HOTEL_ID, ADULTS)
 if room:
     main_log.info('Room found')
 
-    data = {
-        'hotel_id': HOTEL_ID,
-        'check_in': CHECK_IN,
-        'los': LOS,
-        'cheapest_room': room,
-    }
-
     if not os.path.isfile(JSON_PATH):
         with open(JSON_PATH, 'w') as json_file:
-            json.dump([data], json_file, indent=4)
+            json.dump([room], json_file, indent=4)
     else:
         with open(JSON_PATH) as feeds_json:
             feeds = json.load(feeds_json)
-            feeds.append(data)
+            feeds.append(room)
 
             with open(JSON_PATH, 'w') as json_file:
                 json.dump(feeds, json_file, indent=4)

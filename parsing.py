@@ -25,9 +25,17 @@ def get_rooms(check_in: str, los: str, hotel_id: str, adults: str) -> typing.Dic
         return dict()
 
     try:
-        room_grid_data = resp.json()['roomGridData']['masterRooms'][0]
+        resp_json = resp.json()
+
+        check_out = resp_json['hotelSearchCriteria']['checkOutDate']
+
+        hotel_name = resp_json['aboutHotel']['hotelName']
+        currency = resp_json['currencyInfo']['code']
+
+        room_grid_data = resp_json['roomGridData']['masterRooms'][0]
         room_name = room_grid_data['name']
         room_data = room_grid_data['rooms'][0]
+
     except KeyError as err:
         main_log.error('No room information(hotel_id=%s, date=%s, los: %s : %s', hotel_id, check_in, los, err)
         return dict()
@@ -35,7 +43,17 @@ def get_rooms(check_in: str, los: str, hotel_id: str, adults: str) -> typing.Dic
     cheapest_room = {
         'name': room_name,
         'occupancy': room_data['occupancy'],
-        'price': room_data['price']
+        'price': room_data['price'],
+        'currency': currency
     }
 
-    return cheapest_room
+    data = {
+        'hotel_name': hotel_name,
+        'hotel_id': hotel_id,
+        'check_in': check_in,
+        'check_out': check_out,
+        'los': los,
+        'cheapest_room': cheapest_room,
+    }
+
+    return data
