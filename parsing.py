@@ -28,9 +28,9 @@ def get_rooms(check_in: str, los: str, hotel_id: str, adults: str) -> typing.Dic
         resp_json = resp.json()
 
         check_out = resp_json['hotelSearchCriteria']['checkOutDate']
-
         hotel_name = resp_json['aboutHotel']['hotelName']
         currency = resp_json['currencyInfo']['code']
+        hotel_url = resp_json['searchbox']['config']['defaultSearchURL']
 
         room_grid_data = resp_json['roomGridData']['masterRooms'][0]
         room_name = room_grid_data['name']
@@ -54,6 +54,7 @@ def get_rooms(check_in: str, los: str, hotel_id: str, adults: str) -> typing.Dic
         'check_out': check_out,
         'los': los,
         'cheapest_room': cheapest_room,
+        'hotel_url': hotel_url
     }
 
     return data
