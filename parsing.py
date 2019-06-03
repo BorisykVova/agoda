@@ -21,7 +21,6 @@ def get_rooms(hotel_id: str, check_in: str, los: str,  adults: str) -> typing.Di
     except (requests.ConnectionError, requests.RequestException) as err:
             main_log.error("Got Request Exception: %s", err)
             return dict()
-    print(resp.url)
     if resp.status_code in [400, 404]:
         main_log.error('Hotel(hotel_id=%s) not found: %s', hotel_id, resp)
         return dict()
