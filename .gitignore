@@ -112,3 +112,4 @@ logging/*
 results/*
 !results/.gitkeep
 .log
+*.csv

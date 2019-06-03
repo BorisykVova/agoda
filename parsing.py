@@ -1,12 +1,14 @@
-import requests
 import typing
+
+import requests
+
 from logger_creater import get_logger
 
 
 main_log = get_logger('request')
 
 
-def get_rooms(check_in: str, los: str, hotel_id: str, adults: str) -> typing.Dict:
+def get_rooms(hotel_id: str, check_in: str, los: str,  adults: str) -> typing.Dict:
 
     try:
         resp = requests.get('https://www.agoda.com/api/en-us/pageparams/property',
@@ -19,7 +21,7 @@ def get_rooms(check_in: str, los: str, hotel_id: str, adults: str) -> typing.Dic
     except (requests.ConnectionError, requests.RequestException) as err:
             main_log.error("Got Request Exception: %s", err)
             return dict()
-
+    print(resp.url)
     if resp.status_code in [400, 404]:
         main_log.error('Hotel(hotel_id=%s) not found: %s', hotel_id, resp)
         return dict()
