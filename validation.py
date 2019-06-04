@@ -22,7 +22,7 @@ def check_valid(data: list) -> dict:
 
     convert = t.Dict({
          'hotel_id': t.Int,
-         'checkin': t.String,
+         'checkin': valid_date,
          'los': t.Int,
          'adults': t.Int,
     })

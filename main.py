@@ -1,14 +1,12 @@
 from datetime import datetime
 import argparse
 import asyncio
-import time
 import csv
+import time
 
 from parsing import create_tasks
 
 start_time = time.time()
-JSON_PATH = 'results/rooms.json'
-
 now = datetime.now()
 date_now = datetime.strftime(datetime.now(), "%Y-%m-%d")
 
@@ -24,10 +22,11 @@ args = parser.parse_args()
 
 if args.csv:
     with open(args.path, 'r') as csv_file:
-        data = csv.reader(csv_file)
+        data = list(csv.reader(csv_file))
 else:
     data = [[args.id, args.checkin, args.los, args.adults]]
 
 loop = asyncio.get_event_loop()
 future = asyncio.ensure_future(create_tasks(data))
 loop.run_until_complete(future)
+

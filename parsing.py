@@ -1,13 +1,14 @@
 from asyncio import Semaphore
 import asyncio
-import json
-import os
+import typing
 
 from aiohttp import ClientSession, ClientConnectionError
+from trafaret import DataError
 
 from logger_creater import get_logger
+from validation import check_valid
+from record_results import save_data
 
-JSON_PATH = 'results/rooms.json'
 main_log = get_logger('request')
 
 
@@ -19,6 +20,7 @@ async def fetch(url: str, params: dict,  session: ClientSession) -> dict:
         except ClientConnectionError as err:
             main_log.error('Connection error: {}'.format(err))
             return dict()
+
         try:
             checkout = resp_json['hotelSearchCriteria']['checkOutDate']
             hotel_name = resp_json['aboutHotel']['hotelName']
@@ -51,7 +53,7 @@ async def fetch(url: str, params: dict,  session: ClientSession) -> dict:
         return data
 
 
-async def bound_fetch(sem: Semaphore, url: str, params: dict, session: ClientSession):
+async def bound_fetch(sem: Semaphore, url: str, params: dict, session: ClientSession) -> None:
     async with sem:
         data = await fetch(url, params, session)
         if data:
@@ -61,35 +63,21 @@ async def bound_fetch(sem: Semaphore, url: str, params: dict, session: ClientSes
             main_log.info('Room not found')
 
 
-async def create_tasks(input_data: list):
+async def create_tasks(input_data: typing.List[list]) -> None:
     url = 'https://www.agoda.com/api/en-us/pageparams/property'
     tasks = []
     sem = Semaphore(1000)
 
     async with ClientSession() as session:
         for item in input_data:
-            params = {
-                'hotel_id': item[0],
-                'checkin': item[1],
-                'los': item[2],
-                'adults': item[3]
-            }
+            try:
+                params = check_valid(item)
+            except (ValueError, DataError) as err:
+                main_log.info('Invalid data: {}'.format(err))
+                continue
 
             task = asyncio.ensure_future(bound_fetch(sem, url, params, session))
             tasks.append(task)
 
         responses = asyncio.gather(*tasks)
         await responses
-
-
-def save_data(room: dict):
-    if not os.path.isfile(JSON_PATH):
-        with open(JSON_PATH, 'w') as json_file:
-            json.dump([room], json_file, indent=4)
-    else:
-        with open(JSON_PATH) as feeds_json:
-            feeds = json.load(feeds_json)
-            feeds.append(room)
-
-            with open(JSON_PATH, 'w') as json_file:
-                json.dump(feeds, json_file, indent=4)
