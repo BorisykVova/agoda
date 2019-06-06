@@ -22,7 +22,7 @@ def check_valid(data: list) -> dict:
     try:
         params['checkin'] = data[1]
     except IndexError:
-        params['checkin'] = get_date()
+        params['checkin'] = get_date(day_range=60)
 
     try:
         params['los'] = data[2]
