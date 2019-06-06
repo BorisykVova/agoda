@@ -5,7 +5,7 @@ import json
 JSON_PATH = 'results/rooms.json'
 
 
-def save_data(room: dict) -> None:
+async def save_data(room: dict) -> None:
     if not os.path.isfile(JSON_PATH):
         with open(JSON_PATH, 'w') as json_file:
             json.dump([room], json_file, indent=4)

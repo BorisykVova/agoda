@@ -1,8 +1,9 @@
 from asyncio import Semaphore
+from concurrent.futures._base import TimeoutError
 import asyncio
 import typing
 
-from aiohttp import ClientSession, ClientConnectionError
+from aiohttp import ClientSession, ClientConnectionError, ServerTimeoutError
 from trafaret import DataError
 
 from logger_creater import get_logger
@@ -20,6 +21,12 @@ async def fetch(url: str, params: dict,  session: ClientSession) -> dict:
         except ClientConnectionError as err:
             main_log.error('Connection error: {}'.format(err))
             return dict()
+        except ServerTimeoutError as err:
+            main_log.error('Server timeout error: {}'.format(err))
+            return dict()
+        except TimeoutError as err:
+            main_log.error('Concurrent timeout error: {}'.format(err))
+            return dict()
 
         try:
             checkout = resp_json['hotelSearchCriteria']['checkOutDate']
@@ -30,7 +37,7 @@ async def fetch(url: str, params: dict,  session: ClientSession) -> dict:
             room_grid_data = resp_json['roomGridData']['masterRooms'][0]
             room_name = room_grid_data['name']
             room_data = room_grid_data['rooms'][0]
-        except KeyError as err:
+        except (KeyError, IndexError) as err:
             main_log.info('Required information not found: {}'.format(err))
             return dict()
 
@@ -57,7 +64,7 @@ async def bound_fetch(sem: Semaphore, url: str, params: dict, session: ClientSes
     async with sem:
         data = await fetch(url, params, session)
         if data:
-            save_data(data)
+            await save_data(data)
             main_log.info('Room found')
         else:
             main_log.info('Room not found')
@@ -72,7 +79,7 @@ async def create_tasks(input_data: typing.List[list]) -> None:
         for item in input_data:
             try:
                 params = check_valid(item)
-            except (ValueError, DataError) as err:
+            except (ValueError, IndexError, DataError) as err:
                 main_log.info('Invalid data: {}'.format(err))
                 continue
 
