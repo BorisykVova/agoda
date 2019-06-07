@@ -3,8 +3,8 @@ import asyncio
 import csv
 import time
 
-from parsing import create_tasks
 from agoda_date import get_date
+from parsing import create_tasks
 
 
 parser = argparse.ArgumentParser(description='Help')
@@ -15,7 +15,7 @@ parser.add_argument('--adults',  type=int, default=2)
 parser.add_argument('-csv',  action='store_true')
 parser.add_argument('--path', type=str, default='input/input.csv')
 parser.add_argument('--sem', type=int, default=100)
-parser.add_argument('--rand_days', type=int, default=0)
+parser.add_argument('--day_range', type=int, default=0)
 args = parser.parse_args()
 
 
@@ -32,6 +32,6 @@ else:
 
 start_time = time.time()
 loop = asyncio.get_event_loop()
-future = asyncio.ensure_future(create_tasks(data, args.sem, args.rand_days))
+future = asyncio.ensure_future(create_tasks(data, args.sem, args.day_range))
 loop.run_until_complete(future)
 print(time.time() - start_time)

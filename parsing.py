@@ -1,5 +1,5 @@
-from asyncio import Semaphore
 from concurrent.futures._base import TimeoutError
+from asyncio import Semaphore
 import asyncio
 import typing as typ
 
@@ -70,14 +70,14 @@ async def bound_fetch(semaphore: Semaphore, url: str, params: dict, session: Cli
             main_log.info('Room not found')
 
 
-async def create_tasks(input_data: typ.List[dict], semaphore_count: int, rand_days:int) -> None:
+async def create_tasks(input_data: typ.List[dict], semaphore_count: int, day_range: int) -> None:
     url = 'https://www.agoda.com/api/en-us/pageparams/property'
     tasks = []
     semaphore = Semaphore(semaphore_count)
     async with ClientSession() as session:
         for item in input_data:
             try:
-                params = check_valid(item, rand_days)
+                params = check_valid(item, day_range)
             except (ValueError, IndexError, DataError) as err:
                 main_log.info('Invalid data: {}'.format(err))
                 continue
