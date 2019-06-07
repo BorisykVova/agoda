@@ -15,6 +15,7 @@ parser.add_argument('--adults',  type=int, default=2)
 parser.add_argument('-csv',  action='store_true')
 parser.add_argument('--path', type=str, default='input/input.csv')
 parser.add_argument('--sem', type=int, default=100)
+parser.add_argument('--rand_days', type=int, default=0)
 args = parser.parse_args()
 
 
@@ -31,6 +32,6 @@ else:
 
 start_time = time.time()
 loop = asyncio.get_event_loop()
-future = asyncio.ensure_future(create_tasks(data, args.sem))
+future = asyncio.ensure_future(create_tasks(data, args.sem, args.rand_days))
 loop.run_until_complete(future)
 print(time.time() - start_time)
