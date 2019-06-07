@@ -2,17 +2,16 @@ import os
 import json
 
 
-JSON_PATH = 'results/rooms.json'
-
-
 async def save_data(room: dict) -> None:
-    if not os.path.isfile(JSON_PATH):
-        with open(JSON_PATH, 'w') as json_file:
+    results_path = 'results/rooms.json'
+
+    if not os.path.isfile(results_path):
+        with open(results_path, 'w') as json_file:
             json.dump([room], json_file, indent=4)
     else:
-        with open(JSON_PATH) as feeds_json:
+        with open(results_path) as feeds_json:
             feeds = json.load(feeds_json)
             feeds.append(room)
 
-            with open(JSON_PATH, 'w') as json_file:
+            with open(results_path, 'w') as json_file:
                 json.dump(feeds, json_file, indent=4)

@@ -1,2 +1,2 @@
-aiohttp
-trafaret
+aiohttp==3.5.4
+trafaret==1.2.0

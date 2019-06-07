@@ -1,7 +1,7 @@
 from asyncio import Semaphore
 from concurrent.futures._base import TimeoutError
 import asyncio
-import typing
+import typing as typ
 
 from aiohttp import ClientSession, ClientConnectionError, ServerTimeoutError
 from trafaret import DataError
@@ -60,8 +60,8 @@ async def fetch(url: str, params: dict,  session: ClientSession) -> dict:
         return data
 
 
-async def bound_fetch(sem: Semaphore, url: str, params: dict, session: ClientSession) -> None:
-    async with sem:
+async def bound_fetch(semaphore: Semaphore, url: str, params: dict, session: ClientSession) -> None:
+    async with semaphore:
         data = await fetch(url, params, session)
         if data:
             await save_data(data)
@@ -70,11 +70,10 @@ async def bound_fetch(sem: Semaphore, url: str, params: dict, session: ClientSes
             main_log.info('Room not found')
 
 
-async def create_tasks(input_data: typing.List[list]) -> None:
+async def create_tasks(input_data: typ.List[dict], semaphore_count: int) -> None:
     url = 'https://www.agoda.com/api/en-us/pageparams/property'
     tasks = []
-    sem = Semaphore(1000)
-
+    semaphore = Semaphore(semaphore_count)
     async with ClientSession() as session:
         for item in input_data:
             try:
@@ -82,9 +81,7 @@ async def create_tasks(input_data: typing.List[list]) -> None:
             except (ValueError, IndexError, DataError) as err:
                 main_log.info('Invalid data: {}'.format(err))
                 continue
-
-            task = asyncio.ensure_future(bound_fetch(sem, url, params, session))
+            task = asyncio.ensure_future(bound_fetch(semaphore, url, params, session))
             tasks.append(task)
-
         responses = asyncio.gather(*tasks)
         await responses
