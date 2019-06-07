@@ -1,6 +1,6 @@
 import trafaret as t
 
-from agoda_time import get_date, valid_date
+from agoda_date import get_date, valid_date
 
 
 def check_valid(data: dict) -> dict:

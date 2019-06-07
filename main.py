@@ -4,7 +4,7 @@ import csv
 import time
 
 from parsing import create_tasks
-from agoda_time import get_date
+from agoda_date import get_date
 
 
 parser = argparse.ArgumentParser(description='Help')
