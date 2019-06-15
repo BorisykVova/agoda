@@ -3,7 +3,7 @@ from asyncio import Semaphore
 import asyncio
 import typing as typ
 
-from aiohttp import ClientSession, ClientConnectionError, ServerTimeoutError
+from aiohttp import ClientSession, ClientConnectionError, ServerTimeoutError, ContentTypeError
 from trafaret import DataError
 
 from logger_creater import get_logger
@@ -19,33 +19,36 @@ async def fetch(url: str, params: dict,  session: ClientSession) -> dict:
             async with session.get(url, params=params, timeout=10) as response:
                 resp_json = await response.json()
         except ClientConnectionError as err:
-            main_log.error('Connection error: {}'.format(err))
+            main_log.error(f'Connection error: {err}')
             return dict()
         except ServerTimeoutError as err:
-            main_log.error('Server timeout error: {}'.format(err))
+            main_log.error(f'Server timeout error: {err}')
             return dict()
         except TimeoutError as err:
-            main_log.error('Concurrent timeout error: {}'.format(err))
+            main_log.error(f'Concurrent timeout error: {err}')
             return dict()
+        except ContentTypeError as err:
+            main_log.error(f'Response content type error : {err}')
 
         try:
             checkout = resp_json['hotelSearchCriteria']['checkOutDate']
             hotel_name = resp_json['aboutHotel']['hotelName']
             currency = resp_json['currencyInfo']['code']
             hotel_url = resp_json['searchbox']['config']['defaultSearchURL']
-
             room_grid_data = resp_json['roomGridData']['masterRooms'][0]
             room_name = room_grid_data['name']
             room_data = room_grid_data['rooms'][0]
+            room_images = room_grid_data['images']
         except (KeyError, IndexError) as err:
-            main_log.info('Required information not found: {}'.format(err))
+            main_log.info(f'Required information not found: {err}')
             return dict()
 
         cheapest_room = {
             'name': room_name,
             'occupancy': room_data['occupancy'],
             'price': room_data['price'],
-            'currency': currency
+            'currency': currency,
+            'images': room_images
         }
 
         data = {
@@ -79,7 +82,7 @@ async def create_tasks(input_data: typ.List[dict], semaphore_count: int, day_ran
             try:
                 params = check_valid(item, day_range)
             except (ValueError, IndexError, DataError) as err:
-                main_log.info('Invalid data: {}'.format(err))
+                main_log.info(f'Invalid data: {err}')
                 continue
             task = asyncio.ensure_future(bound_fetch(semaphore, url, params, session))
             tasks.append(task)
