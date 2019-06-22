@@ -8,7 +8,7 @@ from trafaret import DataError
 
 from logger_creater import get_logger
 from validation import check_valid
-from record_results import save_data
+from information_processing import save_data
 
 main_log = get_logger('request')
 

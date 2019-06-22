@@ -5,6 +5,7 @@ import time
 
 from agoda_date import get_date
 from parsing import create_tasks
+from information_processing import load_data
 
 
 parser = argparse.ArgumentParser(description='Help')
@@ -20,9 +21,7 @@ args = parser.parse_args()
 
 
 if args.csv:
-    with open(args.path, 'r') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        data = [dict(item) for item in csv_reader]
+    data = load_data(args.path)
 else:
     data = [{'hotel_id': args.id,
              'checkin': args.checkin,
