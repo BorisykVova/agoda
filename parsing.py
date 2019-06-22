@@ -67,7 +67,7 @@ async def bound_fetch(semaphore: Semaphore, url: str, params: dict, session: Cli
     async with semaphore:
         data = await fetch(url, params, session)
         if data:
-            await save_data(data)
+            save_data(data)
             main_log.info('Room found')
         else:
             main_log.info('Room not found')

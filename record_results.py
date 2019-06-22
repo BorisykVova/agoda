@@ -2,7 +2,7 @@ import os
 import json
 
 
-async def save_data(room: dict) -> None:
+def save_data(room: dict) -> None:
     results_path = 'results/rooms.json'
 
     if not os.path.isfile(results_path):
